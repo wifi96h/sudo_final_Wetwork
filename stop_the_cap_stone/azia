@@ -1,1 +1,13 @@
+Capstone Notes
+-------------------------------------
+Scan pivot (nmap -Pn -T4 -p 21-23,80) filtered = make a reverse tunnel
+ip a
+Ruby Ping Sweep from host 2>/dev/null
+dynamic tunnel 
+nmap scan ip for 1-9999 open ports
+proxychains nc <IP> <port> (gives socket/protocol)
 
+
+Potential New Stack IPs
+------------------------
+Bage - 192.168.244.67
