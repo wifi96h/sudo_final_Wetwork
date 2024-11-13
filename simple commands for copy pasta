@@ -3,3 +3,7 @@ ip ne
 ip r
 ss -ntlp
 for i in {1..254}; do (ping -c 1 10.10.10.$i | grep "bytes from" &); done
+
+
+ps -ef | grep snort (Passive Recon. What command was used to run snort on that machine.)
+
