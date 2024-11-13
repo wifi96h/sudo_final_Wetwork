@@ -1,0 +1,1745 @@
+                ##############
+              ##              ##
+            ##                  ##
+          ##      #         #     ##
+          ##                      ##
+          ##           >          ##
+          ##                      ##
+            ##     #########     ##
+              ##              ##
+                ##############
+
+
+
+
+                      #####
+                    #  -  - #
+                   #     >   #
+                    #  ---- #
+                      #####
+                   \    |    /
+                     \  |  /
+                       \|/
+                        |
+                        |
+                        |
+                      /   \
+                    /      \
+                  /          \
+
+Network Fundamentals
+------------------
+OSI Model
+******
+Physical (Layer 1 Physical Connections - Ethernet, Fiber, Radio Waves, etc)
+Data Link (Layer 2 Communication - How the devices communicate, Internet version, etc)
+Network (Layer 3 Internet Protocol - IPv4, IPv6, etc)
+Transport (Layer 4 Protocols - TCP, UDP)
+Session (Layer 5 How a sesion is working - NetBIOS, RPC, etc)
+Presentation (Layer 6 File Formats - JPEG, PNG, etc)
+Application (Layer 7 Specific Protocols - FTP, IMAP, Telnet, etc)
+
+Physical Layer
+^^^^^^
+
+Data Link Layer
+^^^^^^
+MAC (Media Access Control) vs LLC (Logical Link Control)
+Ethernet Header
+******
+First 7 bytes, Preamble
+1 byte delimiter, SFD
+
+Ethernet Frame
+Destination MAC Address, Source MAC Address, Ethertype, Payload, CRC/FCS
+
+Ethertype
+******
+0x0800 - IPv4
+0x0806 - ARP
+0x86DD - IPv6
+0x8100 - VLAN Tag
+
+VLAN Header
+******
+VLAN Tag between Source MAC Address and Ethertype
+Tag Protocol ID - 0x8100 (16 bits)
+PCP/DEI (4 bits)
+VLAN ID (12 bits)
+
+ARP Header
+******
+Hardware Type starts at Byte Offset 0, Protocol Type starts at Byte Offest 2
+Security Concerns
+++++
+Does not require an ARP request
+Host forcing an ARP reply until all hosts update ARP tables, creates a MitM attack
+
+
+Network Layer
+^^^^^^
+IPv4 Headers
+Default value of Version is 4
+Default value of Header Length is 5
+Header Length is number of words in IP Header
+TTL - Windows only uses ICMP, Linux uses TCP with ICMP
+Firewalking - Traceroute command, sending a request to devices that you are connected to, most are /30 subnets and are not accessible for the most part
+
+Fragmentation
+!!!!!!
+If a packet is too big to send all at once it will fragment and send the data with different fragments so the receiver may receive the data properly
+Reserve, Dont Fragment, More Fragment Bits followed by 13 fragment bits
+MTU - (IHLx4) = Data Fragments
+Offset increments by the amount of 8 bit chunks that can fit into the receiving end MTU
+
+IPv6 Headers
+Much less complicated than IPv4 Headers
+No Fragmenting, no header checksum, no identification
+Flow Label
+Source Address and Destination Address are 128 bits long instead of 32 due to IPv6 being 128 bit long addressing
+If fragmentation is needed the sender reaches out to the receiver, the receiver says that it needs fragmented and the sender will fragment before sending the data to the receiver
+
+Fingerprinting
+TTLs and TCP window size
+
+ICMP Headers
+
+IPv4 Address Auto-Configuration
+APIPA
+RFC 3927
+APIPA Addresses are not routable and are 169.254.0.0/16 addresses
+
+IPv6 Address Auto-Configuration
+SLAAC (StateLess Address Auto-Configuration)
+RFC 4862
+
+Transport Layer
+^^^^^^
+Tells the system what kind of and what to open
+TCP states (SYN, SYN/ACK, ACK)
+Data is transfered using PSH/ACK
+Closes using FIN/ACK
+
+UDP Headers
+******
+Source Port, Destination Port, Length, and Checksum
+
+Session Layer
+^^^^^^
+Protocols
+******
+SOCKS (Socket Secure)
+NetBIOS
+PPTP/L2TP
+RPC
+
+SOCKS 4/5
+******
+Will be used a lot for tunneling in this module
+
+PPTP
+******
+Wireshark will break it down
+Very old
+Developed by Microsoft
+
+L2TP
+******
+Developed by Microsoft and Cisco
+Wireshark will read
+
+SMB/CIFS
+******
+SMB rides over NetBIOS
+NetBIOS ports
+----
+Dgram - UDP 138
+Session - TCP 139
+
+RPC
+******
+Request/response protocol
+Makes system calls to connected device
+
+Presentation Layer
+^^^^^^
+Translating
+Formating
+Encoding
+Encryption
+Compression
+
+Application Layer
+^^^^^^
+FTP (TCP 20/21)
+----
+Direct interaction happens in Layer 7
+2 modes - Active and Passive
+FTP Active is default - You ask for the data but if they do not have the rights to access you then they are unable to get to you so you have to reach out for it
+FTP Passive - the act of reaching out and grabbing the data that was requested by converging on a location (IP Address)
+
+Complications with tunneling when using FTP, SSH tunnels normally use one port, FTP uses 2 different ports making the simple way of tunneling not possible
+Uses a random high port to traverse
+
+If using Passive mode, PASV will be present
+retr <file>
+stor <file>
+<file> (10,10,10,10,128,4) 10.10.10.10:32772 ((128x256)+4) = 32772
+
+SSH
+----
+TCP 25
+Used for secure shell, scp, sftp, and a lot of other protocols
+Used for tunnels
+Asymmetric Difi-Helman Key Exchange
+Symmetric for the session
+Keys - User key, Host key, Session key
+Known-Hosts Database - collection of host keys that are used for mutual authentication
+Configuration file - settings that exist to configure ssh
+
+Possible to steal the key needed to login to the ssh to the server, which requires rotation of the keys in order to prevent theft which also leads to the issue of keys being forgotten or lost
+
+Telnet
+----
+Remote connection
+Unsecure
+Used for getting a shell
+
+SMTP
+----
+Simple Mail Transfer Protocol
+Uses port 25 to communicate with servers
+
+TACACS
+----
+TCP 49
+CISCO Remote Login service for switches and routers
+Simple - Shows all data in the same section of the header
+Extended - Has multiple results in the header
+Wireshark will read most of it
+
+HTTP(S)
+----
+TCP 80 (443)
+GET/HEAD/POST/PUT
+Hyper Text Transfer Protocol (Secure)
+Status codes - 200 = good, 300 = it was moved, 400 = you did something wrong, 500 = server did something wrong
+
+POP
+----
+TCP 110
+You go to pick up your mail, downloading the mail
+
+IMAP 
+----
+TCP 143
+Able to read the information from the server
+
+RDP
+----
+TCP 3389
+Remote Desktop Protocol
+
+DNS (QUERY/RESPONSE)
+----
+TCP/UDP 53
+UDP is Query
+TCP is Zone Transfers
+
+DHCP
+----
+UDP 67/68
+Server uses port 67, client uses port 68 when sending and receiving
+Router Solicitation Multicast Address - FF02::2
+Used for IP addressing
+
+DHCPv4
+Discover
+Offers
+Request
+Acknowledge
+
+DHCPv6
+Solicit
+Advertise
+Request
+Reply
+
+TFTP 
+----
+UDP 69
+No terminal
+
+NTP 
+----
+UDP 123
+Network Time Protocol
+
+SNMP
+----
+UDP 161/162
+
+RADIUS
+----
+UDP 1645/1646 AND 1812/1813
+
+RTP 
+----
+UDP above 1023
+
+Mathematics of Networking
+------------------
+Bits = 1 bit
+Nibbles = 4 bits (Hex character also)
+Bytes = 8 bits
+Half Words = 16 bits
+Words = 32 bits
+Double Words = 64 bits
+Quad Words = 128 bits
+
+Base2 = Binary
+Base10 = Decimal
+Base16 = Hex
+Base64 = Used for Encoding, +/.= are signs of Base64
+
+Encapsulation and Decapsulation
+------------------
+Layers
+******
+Layer1 = Bit
+Layer2 = Ethernet Frame
+Layer3 = IP Packet
+Layer4 = TCP Segment
+
+Layer 2 Switching Technologies
+------------------
+Fast Forward - Only Destination MAC
+Fragment Free - First 64 Bytes
+Store and Forward - Entire Frame and FCS
+
+CAM Table
+----
+Learn - Source MAC
+Forward - Destination MAC
+
+IEEE 802.1AD "Q-IN-Q"
+----
+VLANs inside of VLANs
+0x88A8 or 0x9100
+Standard Double Tag or Non-standard Double Tag
+
+"Double Taggging" - Two VLAN IDs with the one in front of the other VLAN Tag being 0x8100
+
+STP
+----
+Spanning Tree Protocol
+Single point of failure
+Prevents Broadcast Storms which send ARP requests to every device connected even if not directly connected. Exhausts all of the resources on the network until it goes down
+Rapid Spanning Tree Protocol - surprisingly enough, it allows Spanning Tree Protocol only faster
+
+DTP
+----
+Dynamic Trunking Protocol
+Trunking - traffic for systems that need to know they are on a VLAN or are not on a VLAN, uses trunking ports
+
+VTP
+----
+VLAN Trunking Protocol
+Have a shit ton of VLANs and have a shit ton of switches, makes it so the administrator does not have to type in all of the VLAN information each time a switch or new VLAN is added
+Provides a centralized VLAN configuration
+Can be used against the network to cause chaos
+Bridge Priority 0 = centralized VLAN/Bridge
+Can very easily be taken down if given physical access, will take the plugged in switch's configuration and overwrite last configuration
+
+Port Security
+----
+shutdown
+restrict
+protect
+BPDU guard - when a new switch is plugged in the new switch will not connect to the old switch
+Sticky MAC - will not allow connection to new MAC address
+
+Layer 2 Discovery Protocols
+----
+Cisco Discovery Protocol (CDP)
+Foundry Discovery Protocol (FDP)
+Link Layer Discovery Protocol (LLDP)
+
+Layer 3 Routing Technologies
+------------------
+Administrative Distance - Lower number, more trust
+BGP uses path vector to decide what it is supposed to be using, using number of hops and time
+Distance vector - RIP and EIGRP
+Link-State - OSPF and IS-IS
+
+BGP
+------------------
+Can be stolen by using illegitimate advertising of addresses
+BGP propagates false information
+Used to steal prefixes, monitoring traffic, intercept, 'black holing' traffic, perform MitM
+
+Defending attacks
+----
+IP prefix filtering
+BGP hijacking detection using TTL tracking, increased Round Trip Time, and monitoring misdirected traffic
+BGPSec
+
+Traffic Sniffing/Capture
+------------------
+Need a capture library to capture network traffic
+Libpcap
+WinPcap
+NPCAP
+
+Wireshark
+------------------
+
+TShark
+------------------
+CLI version of wireshark
+
+TCPDump
+------------------
+sudp tcpdump -D (shows all available listening devices)
+sudo tcpdump -i etho0 (captures the traffic from eth0) -X (packet data with Hex and ASCII) -XX (packet data with Hex and ASCII with Ethernet Frame as well) -vv (verbose) -n (not relying on the system to convert IP to hostnames)
+sudo tcpdump -i etho0 -XXvvn 'not tcp port 22' (forces tcpdump to not show tcp port 22)
+sudo tcpdump -i eth0 -XXvvn '(not tcp port 22) && (udp port 68)' (forces tcpdump to show port 68 and not tcp port 22)
+sudo tcpdump -i eth0 -XXvvn '10.10.0.40 && not tcp port 22' (forces tcpdump to show all connections that are not on port 22 from 10.10.0.40)
+sudo tcpdump -XXvvnr (tells tcpdump to read from a file) /home/activity_resources/pcaps/Xtra.pcap
+sudo tcpdump -i eth0 -XXvvnw (tells tcpdump to write to a file) file.pcap
+
+BPFs
+------------------
+Berkeley Packet Filters
+Allow for the filtering of traffic
+
+tcpdump {A} [B:C] {D} {E} {F} {G}
+
+A = Protocol (ether | arp | ip | ip6 | icmp | tcp | udp)
+B = Header Byte offset
+C = optional: Byte Length. Can be 1, 2 or 4 (default 1)
+D = optional: Bitwise mask (&)
+E = Operator (= | == | > | < | <= | >= | != | () | << | >>)
+F = Result of Expresion
+G = optional: Logical Operator (&& ||) to bridge expressions
+
+Example: 
+tcpdump 'ether[12:2] = 0x0800 && (tcp[2:2] != 22 && tcp[2:2] != 23)'
+
+Bitwise Masking
+Filter by bits and not just the bytes
+
+Most Exclusive
+All designated bit values must be set; no others can be set
+tcp[13] = 0x11 or tcp[13] & 0xFF = 0x11
+0x11
+0x12 - SYN/ACK
+0x28 - PSH/URG
+Can also use decimal to represent the numbers needed to filter on
+
+DSCP x 4
+
+Less Exclusive
+All desginated bits must be set; all other may be set
+tcp[13] & 0x11 = 0x11
+
+Least Exclusive
+At least one of the designated bits must be set to not equal 0; all other may be set
+tcp[13] & 0x11 != 0
+
+ip[6]&0x20 = 0x20||ip[6:2]&0x1FFF > 0||ip[12:4]&0xFFFFFF00=0x0A0A2800
+
+
+
+
+Packet Creation and Socket Programming
+%%%%%%%%%%%%%%%%%%%%%%%%%
+Socket Types
+-------------------
+Stream Sockets
+----
+Connection oriented and sequenced, methods for connection TCP, SCTP, and Bluetooth
+
+Datagram Sockets
+----
+Connectionless, UDP
+
+Raw Sockets
+----
+Direct sending and receiving of IP packets without protocol specific formatting
+
+User Space vs Kernel Space Sockets
+------------------
+User Space Sockets
+----
+Stream Sockets
+Datagram Sockets
+
+Kernel Space Sockets
+----
+Raw Sockets
+
+Socket Creation
+-----------------
+User Space Sockets - Most common sockets that do not require elevated privileges
+^^^^
+tcpdump or wireshark
+netcat above well known port range
+nmap with no switches
+
+Kernel Space Sockets - Attemps to access hardware directly on behalf of a user application
+^^^^
+tcpdump or wireshark
+nmap for OS identification
+netcat in well known port range
+
+
+Network Sockets primarily use the Python3 Socket library and socket.socket function
+-------------------
+Family
+****
+AF_INET = IPv4
+AF_INET6 = IPv6
+AF_UNIX = Program to program interaction
+
+Type
+****
+SOCK_STREAM = TCP
+SOCK_DATAGRAM = UDP
+SOCK_RAW = RAW
+
+Protocol
+****
+IPPROTO_RAW = RAW
+
+import socket
+  s = socket.socket(socket.<FAMILY>, socket.<TYPE>, socket.<PROTOCOL>)
+
+RAW IPv4 Sockets
+^^^^
+Raw Socket scripts must include the IP header and next headers
+Used for testing defenses such as triggering and IDS
+Used also to bypass firewalls
+
+Network Reconnaissance
+----------------------
+Active - Internal (DNS Queries, ARP Requests), External (Network Scanning)
+Passive - Internal (Packet Sniffers), External (DNS Lookups, Whois, Job Site Listings)
+Internal
+External
+
+Passive - Gathering information without direct interaction, lower risk
+----
+Involves identifying IP Addresses and sub-domains, external and 3rd party sites, people and technologies, content of interest, vulnerabilities
+Tools - WHOIS Queries, job site listings, phone numbers, google searches, passive OS fingerprinting
+
+Passive External Network Reconnaissance
+----
+Resolves hostnames to IP Addresses
+RFC 3912
+WHOIS queries
+
+Dig
+****
+Typically between primary and secondary DNS servers
+If allowed to transfer externally hostnames, IPs, and IP blocks can be determined
+
+AXFR = Zone Transfers
+
+Zone Transfers
+****
+Return DNS information
+supplements base queries
+
+WHOIS Queries
+****
+Can use the internet wayback machine if the domain is old, could reveal potential information that has since been removed but was captured
+
+Google Searches
+****
+Research
+
+SHODAN
+****
+Search engine for internet-connected devices
+Reveals information about technologies, remote access services, improperly configured services, and network infrastructure
+When selected can give additional information and applicable vulnerabilities
+
+Network Scanning
+-------------------
+Scanning Strategy
+----
+Remote to Local - Outside to In
+Local to Remote
+Local to Local
+Remote to Remote
+
+Scanning Approach
+----
+Aim
+****
+Wide range target scan
+Target specific scan
+
+Method
+****
+Single source scan
+Distributed scan
+
+Methods
+----
+Broadcast ping and ping sweep
+ARP scan
+SYN scan
+Full scan
+NUll scan
+FIN scan
+XMAS scan
+UDP scan
+
+NMap options
+----------------
+-sU - UDP
+-sS - SYN
+-n - disable name resolution
+--min-rate <NUM> how many packets to send per second
+-vv - verbose
+-T4 - speed up scan without dropping packets
+-Pn - "treat this target as if its up
+-A - all information
+-p - ports scanned (1-1024, scans 1-1024, -1024m scans first available number)
+-p- - scans all ports
+
+Netcat
+----------------
+-nc -nzvw1
+-1 sec
+-no name resolution
+-verbose
+-wait
+
+nc <IP> 22 - if SSH shows, it is banner grabbig
+Trust but verify
+
+NETWORK SCAN SCRIPT 
+\\\\\\\\\\\\\\\\\\\\\\\\\\////////////////////////
+#!/bin/bash
+echo "Enter network address (e.g. 192.168.0): "
+read net
+echo "Enter starting host range (e.g. 1): "
+read start
+echo "Enter ending host range (e.g. 254): "
+read end
+echo "Enter ports space-delimited (e.g. 21-23 80): "
+read ports
+for ((i=$start; $i<=$end; i++))
+do
+    nc -nvzw1 $net.$i $ports 2>&1 | grep -E 'succ|open'
+done
+# (-v) running verbosely (-v on Linux, -vv on Windows),
+# (-n) not resolving names. numeric only IP(no D.S)
+# (-z) without sending any data. zero-I/O mode(used for scanning)
+#(-w1) waiting no more than 1second for a connection to occur
+# (2>&1) redirect STDERR to STDOUT. Results of scan are errors and need to redirect to output to grep
+# (-E) Interpret PATTERN as an extended regular expression
+# ( | grep open) for Debian to display only open connections
+# ( | grep succeeded) for Ubuntu to display only the open connections
+
+Make web requests with Linux
+------------------
+curl
+wget -r (-r for recursive) <Protocol>://<IP>:<Port>
+
+Situational Awareness Checklist
+------------------
+Hostname / uname -a
+Whoami, w
+Directory (pwd)
+sudo -l
+cat /etc/services, /etc/hosts
+ps -elf
+netstat -ano or -ntlpu (no resolution, tcp, listening, process id, udp) / ss -ntlpu
+ipconfig / ifconfig / ip addr or ip a
+arp -a / ip neighbor / ip n
+ip route / ip r / route
+check any other directories as directed / important directories
+
+Ruby Ping sweep
+for i in {1..254} ;do (ping -c 1 192.168.1.$i | grep "bytes from" &) ;done
+
+after 21-23,80 scan 1-9999
+
+Data Transfer, Movement, and Redirection
+--------------------
+TFTP - Trivial File Transfer Protocol 
+  No shell
+FTP
+  Active
+    The data comes to you
+  Passive
+    You go get the data
+SFTP - SSH File Transfer Protocol
+  Uses port 22 using SSH, gives a terminal, encrypted and secure
+
+SCP - Secure Copy
+  uses port 22
+  uses SSH
+  noninteractive
+  Syntax:
+    scp <options> <source> <destination>
+    scp -P<port> -r(recursive) -3(3 way communication)
+    scp file.txt(relative path) <username>@<IP>:<directory>
+    scp <user>@<IP>:/etc/ssh/sshd_config . (saves sshd_config to current directory)
+
+FTPS - File Transport Protocol Secure
+  TCP transport port 443
+  SSL/TLS encryption to FTP
+  Interactive terminal access
+
+Traffic Redirection
+--------------------
+Netcat
+  Syntax:
+    Client to Listener
+      nc <IP> <port> < <file> (sending)
+      nc -lp <port> > <file> (receiving)
+    Listener to Client
+      nc -lp <port> < <file>
+      nc <IP> <port> > <file>
+
+mkfifo <pipe name>
+<command> > <pipe name>
+
+Host functioning as relay:
+<nc command> 0< mypipe | <nc command> 1> mypipe
+
+SSH Tunneling
+---------------------
+creating new channels using SSH-CONN protocol
+allows for tunneling of other services through SSH
+provides insecure services encryption
+
+SSH Local Port Forwarding
+---------------------
+ssh -p <optional alt port> <user>@<pivot ip> -L <local bind port>:<target ip>:<target port>
+or
+ssh -L <local port>:<target ip>:<target port> -p <alt port> <user>@<pivot ip> -NT
+
+SSH Remote Port Forwarding
+---------------------
+ssh -p <optional alt port> <user>@<remote ip> -R <remote bind port>:<target ip>:<target port> -NT
+or
+ssh -R <remote bind port>:<target ip>:<target port> -p <optional alt port> <user>@<remote ip> -NT
+
+nmap <IP>
+nc <IP> <port> - shows what service is running on the port
+
+wget -r ftp://<IP>:22(alternate port)
+Creates a folder called <IP>:22 on the local host
+
+ssh <found username>@<IP> -p 25 -L 50200:127.0.0.1:80(open port on the example machine) -NT (terminal does not accept more input)
+ssh <user>@InternetHost -R 50299:127.0.0.1:80(open port on the example machine) -NT
+wget -r 127.0.0.1:50200 or 50299 (makes the directory 127.0.0.1:50200 on local machine)
+#####################################################
+###                                               ###
+###                  TUNNELING                    ###
+###                                               ###
+#####################################################
+ssh <user>@<IP> -p 25 -D 9050 -NT
+proxychains <nmap> -Pn Jerry, Thomas (hostnames)
+Jerry - 21, 22, 23, 80 (open ports)
+Thomas - 23, 80 (open ports)
+Joe - 22, 80, 443
+proxychains wget -r ftp://Jerry (sends through the tunnel created with 9050)
+Creates Jerry directory on local machine
+proxychains wget -r Jerry
+Sends information to Jerry directory
+proxychains wget -r Thomas
+Creates Thomas directory on local machine
+proxychains telnet Jerry (gives access to Jerry)
+
+ssh <user>@<IP>(first box accessed) -p 25 -R 50298:127.0.0.1:22 -NT
+ssh <user>@<IP>(Bob) -p 25 -L 50201:127.0.0.1:50298 -NT
+nc 127.0.0.1 50201 (to check tunnels)
+ssh <user>@127.0.0.1 -pp 50201 (gives access to Jerry) -D 9050 (close old connection) -NT
+ssh <user>@Bob -p 25 -L 50202:Jerry:23 -NT
+telnet 127.0.0.1 50202
+ssh <user>@Bob -p 25 -R 50298:127.0.0.1:22 -NT
+ssh <user>@127.0.0.1 -p 50201 (gives access to Jerry) -D 9050 -NT
+proxychains <nmap -Pn Joe or ./scan.sh>
+proxychains nc Joe (22)(80)(443) (22 - SSH, 80 - Telnet, 443 - FTP)
+proxychains wget -r ftp://Joe:443 (Creates Joe:443 directory on local machine)
+#####################################################
+###                                               ###
+###                END OF TUNNELING               ###
+###                                               ###
+#####################################################
+
+50200-50299 - ports
+L ->    <-R
+
+Network Analysis
+------------------------
+Fingerprinting
+----
+Passive OS Fingerprinting
+  /etc/p0f/p0f.fp
+p0f -i eth0 (command)
+tcpdump port 80 -w wget.pcap - write tcpdump port 80 results to a file named wget.pcap
+p0f -r wget.pcap - read command for file that was created
+p0f -r wget.pcap -o /var/log/p0f.log - reads results and sends them to p0f.log
+cat /var/log/p0f.log | grep "mod=syn" - grep for SYN packets
+cat /var/log/p0f.log | grep "mod=syn" | grep "subj=cli" - grep for SYN packets from the client
+
+Baselining
+----
+Snapshot of what the network looks like during a time frame
+No industry standard
+7 days is the baseline - shows what is supposed to happen on a work day and what is supposed to happen on a non-work day
+
+Network Data Types
+----
+Full Packet capture data - PCAPS
+Session Data
+Statistical Data
+Packet String Data
+Alert Data
+Log Data
+
+MitM attacks are caused by gratuitous replies
+
+Network Filtering
+----------------------
+Practical applications for filtering
+----
+email addresses - to block unwanted email and increase productivity
+computer applications in an organization environment - for security from vulnerable software
+MAC filtering - also for security
+Network traffic
+
+Devices used to filter traffic
+----
+Firewall
+IDS (Intrustion Detection Systems)
+
+Filtering Concepts
+----
+Whitelist vs Blacklist (Allowed vs disallowed)
+
+Network Device Operations
+----
+Routed - specific firewall IP
+Transparent - 
+
+Filtering Device Placement - as close to where the packets will be coming from as possible
+
+
+
+
+
+
+
+
+iptables - IPv4 packet administration
+ip6tables - IPv6 packet administration
+ebtables - Ethernet Bridge frame table administration
+arptables - arp packet administration
+
+filter - default table. Provides packet filtering.
+    INPUT, FORWARD, and OUTPUT
+
+nat - used to translate private ←→ public address and ports.
+    PREROUTING, POSTROUTING, and OUTPUT
+
+mangle - provides special packet alteration. Can modify various fields header fields.
+    All Chains: PREROUTING, POSTROUTING, INPUT, 
+
+raw - used to configure exemptions from connection tracking.
+    PREROUTING and OUTPUT
+
+security - used for Mandatory Access Control (MAC) networking rules.
+    INPUT, FORWARD, and OUTPUT
+
+-A - append
+-I - Insert
+-D - delete
+-L - list
+-P - changes the default policy
+-p - list a protocol
+--sport or --dport - address a specfic port number
+-d - destination address
+-s - source address
+-j - jump to target action
+-n - displays port number
+-t - specifies a table
+--line numbers - prints the rule number
+
+Table Flush
+iptables -t [table] -F
+
+Default policy change
+iptables -t [table] -P [chain][action]
+
+List rules with rule numbers
+iptables -t [table] -L --line-numbers
+
+Lists rules as commands interpreted by the system
+iptables -t [table] -S
+
+Inserts rule before Rule number
+iptables -t [table] -I [chain] [rule num] [rules] -j [action]
+
+Deletes rule at number
+iptables -t [table] -D [chain] [rule num]
+
+NFTables
+    ip - IPv4 packets
+    ip6 - IPv6 packets
+    inet - IPv4 and IPv6 packets
+    arp - layer 2
+    bridge - processing traffic/packets traversing bridges.
+    netdev - allows for user classification of packets - nftables passes up to the networking stack
+    (no counterpart in iptables)
+
+There are only 3 chain types
+    filter - to filter packets - can be used with arp, bridge, ip, ip6, and inet families
+    route - to reroute packets - can be used with ip and ipv6 families only
+    nat - used for Network Address Translation - used with ip and ip6 table families only
+
+nft add table [family] [table]
+[family] = ip, ip6, inet, arp, bridge and netdev.
+[table] = user provided name for the table.
+
+nft add chain [family] [table] [chain] { type [type] hook [hook]
+    priority [priority] \; policy [policy] \;}
+[chain] = User defined name for the chain.
+[type] =  can be filter, route or nat.
+[hook] = prerouting, ingress, input, forward, output or
+         postrouting.
+[priority] = user provided integer. Lower number = higher
+             priority. default = 0. Use "--" before
+             negative numbers.
+; [policy] ; = set policy for the chain. Can be
+              accept (default) or drop.
+ Use "\" to escape the ";" in bash
+
+nft add rule [family] [table] [chain] [matches (matches)] [statement]
+[matches] = typically protocol headers(i.e. ip, ip6, tcp,
+            udp, icmp, ether, etc)
+(matches) = these are specific to the [matches] field.
+[statement] = action performed when packet is matched. Some
+              examples are: log, accept, drop, reject,
+              counter, nat (dnat, snat, masquerade)
+
+nft {list | flush} ruleset
+nft {delete | list | flush } table [family] [table]
+nft {delete | list | flush } chain [family] [table] [chain]
+
+nft list table [family] [table] [-a]
+    Adds after position
+    nft add rule [family] [table] [chain] [position <position>] [matches (matches)] [statement]
+    Inserts before position
+    nft insert rule [family] [table] [chain] [position <position>] [matches (matches)] [statement]
+    Replaces rule at handle
+    nft replace rule [family] [table] [chain] [handle <handle>] [matches (matches)] [statement]
+    Deletes rule at handle
+    nft delete rule [family] [table] [chain] [handle <handle>]
+
+Terminator ports
+6010,6011,6012
+
+nftables
+----
+sudo apt-get install nftables
+sudo nft list tables
+sudo nft add table ip <BH1>
+sudo nft flush table ip <BH1>
+sudo nft delete table ip <filter>
+sudo nft add chain ip <BH1> <input> { type filter hook <input> priority 0\; policy accept\; }
+sudo nft list table ip <BH1>
+sudo nft add chain ip <BH1> output { type filter hook <output> priority 0\; policy accept\; }
+sudo nft insert rule ip <BH1> input tcp dport 22 accept
+sudo nft insert rule ip <BH1> input tcp sport 22 accept
+sudo nft insert rule ip <BH1> output tcp dport 22 accept
+sudo nft insert rule ip <BH1> output tcp sport 22 accept
+sudo nft add rule ip <BH1> input tcp dport { 6010,6011,6012 } ct state { new,established } accept
+sudo nft add rule ip <BH1> output tcp sport { 6010,6011,6012 } ct state { new,established } accept
+
+Changing default policy
+----
+sudo nft add chain ip <BH1> input { type filter hook input priority 0\; policy drop\; }
+sudo nft add chain ip <BH1> output { type filter hook output priority 0\; policy drop\; }
+
+allow and deny specific Ip addresses
+----
+sudo nft add rule ip <BH1> input ip saddr 172.16.82.112 drop
+sudo nft add rule ip <BH1> output ip daddr 172.16.82.112 drop
+sudo nft insert rule ip <BH1> input ip saddr 10.10.0.40 accept 
+sudo nft insert rule ip <BH1> output ip daddr 10.10.0.40 accept
+
+check position numbers of rules
+----
+sudo nft list table ip BH1 -ann
+
+move to top
+----
+sudo nft add rule ip BH1 input position 21 ip saddr 172.16.82.112 drop
+sudo nft add rule ip BH1 output position 22 ip daddr 172.16.82.112 drop
+Delete old rules
+--
+sudo nft delete rule ip BH1 input handle 19
+sudo nft delete rule ip BH1 output handle 20
+
+sudo nft add rule ip BH1 input ct state invalid drop (drop invalid packets)
+sudo nft add rule ip BH1 input ip frag-off != 0 drop (drops fragmented packets, dont do on a route)
+sudo nft add rule ip BH1 input tcp flags syn limit rate 10/second accept (only allows 10 syn packets per second)
+
+sudo nft list ruleset > nftable.rules 
+sudo nft add chain ip BH1 input { type filter hook input priority 0\; policy accept\; }
+sudo nft add chain ip BH1 output { type filter hook output priority 0\; policy accept\; }
+sudo nft flush table ip BH1
+
+sudo nft -f nftables.rules (inserts preset rules back into nftables)
+
+Snort Rules
+----
+[action] [protocol] [s.ip] [s.port] [direction] [d.ip] [d.port] ( match conditions ;)
+
+    Action - such as alert, log, pass, drop, reject
+    Protocol - includes TCP, UDP, ICMP and others
+    Source IP address - single address, CIDR notation, range, or any
+    Source Port - one, multiple, any, or range of ports
+    Direction - either inbound or in and outbound
+    Destination IP address - options mirror Source IP
+    Destination port - options mirror Source port
+
+Snort Rule Options
+----
+    msg - specifies the human-readable alert message
+    reference - links to external source of the rule
+    sid - used to uniquely identify Snort rules
+    rev - uniquely identify revisions of Snort rules
+    Classtype - used to describe what a successful attack would do
+    priority - level of concern (1 - really bad, 2 - badish, 3 - informational)
+    metadata - allows a rule writer to embed additional information about the rule
+
+Payload Detection Options
+----
+    content - looks for a string of text.
+    |binary data| - to look for a string of binary HEX
+    nocase - modified content, makes it case insensitive
+    depth - specify how many bytes into a packet Snort should search for the specified pattern
+    distance - how far into a packet Snort should ignore before starting to search for the specified pattern relative to the end of the previous pattern match
+    within - modifier that makes sure that at most N bytes are between pattern matches using the content keyword
+    offset - skips a certain number of bytes before searching (i.e. offset: 12)
+
+Non-Payload Detection Options
+----
+    Flow - direction (to/from client and server) and state of connection (established, stateless, stream/no stream)
+    ttl - The ttl keyword is used to check the IP time-to-live value.
+    tos - The tos keyword is used to check the IP TOS field for a specific value.
+    ipopts - The ipopts keyword is used to check if a specific IP option is present
+    seq - check for a specific TCP sequence number
+    ack - check for a specific TCP acknowledge number.
+    flags - The flags keyword is used to check if specific TCP flag bits are present.
+    itype - The itype keyword is used to check for a specific ICMP type value.
+    icode - The icode keyword is used to check for a specific ICMP code value.
+
+Post Detection Options
+----
+    logto - The logto keyword tells Snort to log all packets that trigger this rule to a special output log file.
+    session - The session keyword is built to extract user data from TCP Sessions.
+    react - This keyword implements an ability for users to react to traffic that matches a Snort rule by closing connection and sending a notice.
+    tag - The tag keyword allow rules to log more than just the single packet that triggered the rule.
+    activates - This keyword allows the rule writer to specify a rule to add when a specific network event occurs.
+    activated_by - This keyword allows the rule writer to dynamically enable a rule when a specific activate rule is triggered.
+    count - Allows the rule writer to specify how many packets to leave the rule enabled for after it is activated.
+
+Thresholding and Suppression Options
+----
+    type [limit | threshold | both]
+        limit alerts on the 1st event during defined period then ignores the rest.
+        Threshold alerts every [x] times during defined period.
+        Both alerts once per time internal after seeing [x] amount of occurrences of event. It then ignores all other events during period.
+    track [by_src | by_dst] - rate is tracked either by source IP address, or destination IP address
+    count [#] - number of rule matching in [s] seconds that will cause event_filter limit to be exceeded
+    seconds [seconds] - time period over which count is accrued. [s] must be nonzero value
+
+Under 100 - No
+Over 1000000 - yes
+
+Who uses leet speak anymore?
+
+More Notes
+----------------------------------
+https://net.cybbh.io/public/networking/latest/index.html
+
+Less learning how to directly defend the network and more of the network at basic level
+
+
+Goodbye my friend, you messed up again.
+
+Port range 51500-51599
+c 6,005.64
+s 42.35
+I 2,119.16
+Network Fundamentals 
+______________________________________________________________________________________________________________________
+
+a hex character is a nibble or 4 bits
+2 hex characters is a byte
+2 half words are a word
+a long word is two words 
+a quad word is two long words
+
+Communication happens through encapsulation and decapsulation depending on which layer of the OSI model it is going through
+Looking at the graph there are different examples of which layers of the OSI model certain applications work through
+Data link sub-layers MAC and LLC 
+The destination is sent first over ethernet beclause when the frames are going through switches it makes it faster, because they don't need a source just a destination
+
+Common Ethertypes controlled by IANA.org:
+
+        0x0800 - IPv4
+
+        0x0806 - ARP
+
+        0x86DD - IPv6
+
+        0x8100 - VLAN Tagging 802.1q
+
+The default value of the IHL is 5. but why? 
+20B or 160b because it is broken into words (32b) making it 5
+Understand headers and how to read them
+Linux 64 Windows 128 Cisco 255 on the TTL
+Linux just uses icmp and Windows also uses UDP
+1 for icmp, 6 for tcp and, 11 for udp
+
+        Flags                        Frag Offset
+0        0        0        |        
+Res      DF       MF
+On the fragmlentation process the offset will go up by number of 8 bits chunks which is why it's going up by 185 instead of 1480
+
+Don't worry about all that noise wireshark got you baby
+IPv4 we got APIPA 169.254.0.0/16
+
+Session layer has SOCKS
+or Socket Secure
+PPTP is a very old and insecure vpn developed by Microsoft
+L2TP Cisco and Microsoft combined to create this
+SMB/CIFS is Server Message Block shit
+RPC is running commands or system calls over the network
+
+Presentation, the difference between a Villain and a Super Villain
+Translation
+Formating
+Encoding (ASCII,EBCDIC,HEX,BASE64)
+Encryption (Symmetric or Asymmetric)
+Compression
+
+Application Layer THE BEEFY BOI
+FTP gives you a prompt
+FTP active, like calling the pizza place and telling them to deliver it
+FTP passive, calling the pizza to order it, but you still have to go pick it up
+
+Telnet is an insecure method of getting a shell
+
+
+
+
+
+Spanning Tree Protocol  
+Eliminate single point of failure 
+ARP requests can cause a broadcast storm with a bunch of interconnected switches 
+One switch directly connected to the router is the root bridge
+Setting alternate ports to a blocking state can stop a broadcast storm
+There's also a Rapid STP which speeds up the setup process
+Cisco versions of STP
+Per VLAN Spanning Tree (PVST)
+Per VLAN Spannning Tree Plus (PVST+)
+
+Layer 2 Discovery Protocols
+Cisco Discovery Protocol (CDP)
+Foundry Discovery Protocol (FDP)
+Link Layer Discovery Protocol (LLDP)
+
+
+Dynamic Trunking Protocol
+Trunk ports are what connect different VLANS
+
+
+VLAN Trunking Protocol
+Whatever updates are made to the VTP are pushed out to all other VLANs in the VTP domain
+
+
+Port Security
+Modes
+ - Shutdown
+ - Restrict
+ - Protect
+
+Switches separate collision domains
+Routers separate broadcast domains
+WE ARE NOT MAKING ROUTER CONFIGS
+Subnetting is dividing networksNetwork Fundamentals 
+______________________________________________________________________________________________________________________
+
+Supernetting is combining networks, trading network bits for host bits
+DuckDuckGo.com can subnet for you
+The lookup process is based off what is the closest match
+RIP, EIGRP (USMC), OSPF (ARMY), BGP (Internet)
+Having multiple routers is good for backups and reducing a single point of failure
+Some protocols for these are 
+Hot Standby Router Protocol (HSRP)
+Virtual Router Redundancy Protocol (VRRP)
+Gateway Load Balancing Protocol (GLBP)
+
+Administrative Distance
+Tells the router how much it should trust the route it is looking at
+
+Metrics
+Hop
+Bandwith
+Delay
+Load
+Maximum Transmission Units
+Reliability
+Cost
+Policy
+
+Static Routing
+Does not send updates
+No bandwith used and minimal system resources
+Data path is pre-determinied
+Time consuming and prone to error in configuring
+Administrator must intervene during any network outages
+Does not scale well for large growing networks
+
+Dynamic Chad Routing
+Only worry about BGP for Exterior Gateway Protocols
+Look at the table
+Advantages
+        -Easier to configure and maintain network
+        -Intervention not needed with network outages
+        -Scales very well for large networks
+Disadvantages
+        -Consumes bandwidth and system resources
+        -Updates can be intercepted
+        -Data path is not pre-determined
+
+IGP and EGP
+OSPF, RIPv2, EIGRP, and ISIS can all communicate together through BGP
+Distance Vector and Link State
+
+Clients talk from port 68 to 67 when using DHCP
+
+BGP
+Road-map of the Internet
+Routes traffic between Autonomous System (AS) Number
+Advertises IP CIDR address blocks
+Establishes Peer relationships
+Complicated configuration
+Complicated and slow path selection
+How does it work?
+Advertise a more specific route, like how a /24 is more specific than a /16
+Follows shorter route
+Hijacking
+        1. Illegitimate advertising of addresses
+        2. BGP propagates false information
+        3. Prupose
+                -stealing prefixes
+                -monitoring traffic
+                -intercept (and possibly modify) Internet traffick
+                -'black holing' traffic
+                -perform MitM
+How to prevent
+Ip prefix filtering
+BGP hijacking detection
+  - Track the change in TTL of incoming packets
+  - Incresed round trip time (RTT) which increases latency
+  - Monitoring misdirected traffic
+BGPSec
+
+Capture library
+Using things like Libpcap, WinPcap, or NPCAP
+
+
+TCPDUMP
+sudo tcpdump -i eth0 -XXvvn '(not tcp port 22) && (udp port 68)'
+sudo tcpdump -i eth0 -XXvvn 'src host 10.10.0.40 && not tcp port 22'
+sudo tcpdump -XXvvnr /home/activity_resources/pcaps/Xtra.pcap
+
+when trying to filter for the DSCP multiply it by 4, which is why  is true
+ip[6:2] & 0x1FFF !=0
+ip[12:4] is for source ip addresses
+ip[16:4] is for destination ip address
+ip[12:4]=0x0A0A2801
+ip[12:4]&0xFFFFFF00=0x0A0A2800 this works as a subnet mask 
+
+
+Network Programming 
+______________________________________________________________________________________________________________________
+
+Scket types
+1. Stream
+Secure connection with a 3-way handshake
+
+2. Datagram
+UDP/Yeeter, sprays prays and hopes for the best
+
+3. Raw
+Different cause it raw dogs in with the kernel rather than in user space
+
+
+Sockets are the no shit way networking works, ssh uses sockets. Sockets are just making a connection and whatever protocol they are built on 
+
+User Space Applications
+tcpdump or wireshark to read a file
+nmap with no switches
+netcat to create a listener above the well known range
+using /dev/tcp or /dev/udp to transmit
+
+Kernel Space Applications
+using tcpdump or wiresharks on the wire
+Using nmap for OS id or to set flags
+netcat to create a listener
+
+import socket
+s = socket.socket(socket.FAMILY, socket.TYPE, socket.PROTOCOL)
+*Family/Type/Protocol will be changed with whatever we're trying to create*
+
+socket.socket([*family*[,*type*[*proto*]]])
+
+Family Constants 
+AF_INET, AF_INET6, AF_UNIX
+Type Constants
+SOCK_STREAM, SOCK_DGRAM, SOCK_RAW
+Proto Constants
+0, IPPROTO_RAW
+
+Raw sockets
+Are used to testing specific defenses, avoiding them, and to be sneaky
+
+
+Network Reconnaissance
+______________________________________________________________________________________________________________________
+
+
+
+Active scanning
+Network Scanning DNS Queries / Arp Requests
+External                       Internal  
+
+Passive scanning
+DNS Lookups Whois Job Site Listings / Packet Sniffers
+External                              Internal
+
+Passive recon is about gathering info about targets without direct interaction, is more difficult but more sneaky
+Involves identifying IP addresses and subdomains, any external or third party sites, people and technologies, content of interest, and vulnerabilities
+Tools are WHOIS, Job site listings, phone numbers, google searches, passive OS fingerprinting nslookup, dig
+The internet wayback machine
+
+dig axfr @nsztm1.digi.ninja zonetransfer.me
+whois ccboe.net
+Google Dorking
+*ccboe.net -site:*.ccboe.net
+site:*.ccboe.net "Powered by"
+Shodan
+- is a repository of web accessable vulnerable devices, cost money, and can lead to trouble 
+
+Active external recon
+Different strategies, Remote to Local, Local to Remote, Local to Local, Remote to Remote
+Scanning approach, aim (wide range target scan or target specific) and method (single source scan or distributed)
+Broadcast ping and ping sweep, arp scan, syn scan, full connect scan, null scan, fin scan, xmas tree scan, UDP scan
+ACK/Window scan, RPC scan, FTP scan, decoy scan, OS fingerprinting scan, version scan, protocol ping, discovery probes, idle scan
+FTP bounce scan, maimon scan, ICMP echo discovery probe, Timestamp Discovery Probe, Netmask Request Discovery probe,
+SCTP INIT Scan
+Tools fping, hping3, arping, nmap, netcat
+nmap by default does a full connect scan, scans the top 1000 ports used by everyone and host discovery 
+Syn scan is with -sS and using sudo, with this verify what services are actually running
+Version scan is with -sV which will check what service is actually running, with a -vv makes it verbose, and -O adds OS
+nmap IP -vv -A -p 1-1024 or even -1024
+nmap ip -T4 --min-rate 10000 makes it loud but faster
+A -n will disable name resolution on nmap
+namp ip -vv -sU -T4 --min-rate 10000 -Pn
+nc -nzw1
+-n no name resolution, -z port scanning mode, I/O mode using TCP, -w for wait for 1 second
+curl will show the html, wget will download it adding -r gives you more
+wget -r ftp://172.16.82.112:4444
+
+Situational awareness
+1. hostname / uname -a
+2. whoami, w
+3. pwd
+4. sudo -l
+5. cat /etc/services & /etc/hosts
+6. ps -elf
+7. netstat -ntlup / ss -ntlup
+8. ifconfig / ip addr or ip a
+9. arp / ip n or neigh
+10. route / ip route or r
+11. Check any important directories as directed
+
+for ping sweep
+for i in {1..254} ;do (ping -c 1 192.168.1.$i | grep "bytes from" &) ;done
+
+21-23 80
+
+Movement, Redirection, and Data Transfer
+______________________________________________________________________________________________________________________
+
+TFTP
+Small and simple communication
+FTP
+Active mode
+        The pizza is delivered
+Passive mode
+        You go get the pizza
+No matter what with FTP there are two ports being used. The command port (21) and the port used for the actual data transfer
+SFTP
+SSH File Transfer Protocol, has a higher range of features over SCP like resuming interrupted transfers, directory listings, and remote file removal.
+FTPS 
+File Transfer Protocol Secure
+        has an implicit mode and explicit mode
+        implicit has encryption at all times over ports 990 and 989 
+        explicit mode uses port 21 and can be secure or unsecure
+SCP
+uses port 22 and ssh but is non interactive
+scp <options> <source> <destination> 
+scp -P <port>
+scp -r <recursively copy a directory>
+scp -3 <3 way communication>
+scp file.txt <user>@<ip address>:<path in relation to user home directory>
+scp <user>@<IP>:/etc/ssh/sshd_config .
+
+NETCAT
+Uses network socket connections to read and write data
+Can be used for metasploit shells or banner grabbing
+
+Client (seds file): nc 10.2.0.2 9001 < file.txt
+Listener (receives file): nc -l -p 9001 > newfile.txt
+
+named pipes
+nkfifo <name of pipe>
+
+FOR RELAY
+<nc command> 0<piper | <nc command> 1>piper
+
+on one machine do nc -lp 5454
+on another do nc 10.10.0.40 4343
+on the IH machine nc 172.16.82.106 5454 0<piper | nc -lp 4343 1>piper
+
+
+
+Local and Dynamic SSH Tunneling
+Local port forwarding
+ssh -p <optional alt port> <user>@<pivot ip> -L <local bind port>:<tgt ip>:<tgt port> -NT
+or
+ssh -L <local bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<pivot ip> -NT
+
+SSH Local Port Forwarding
+
+    Creates a local port (1111) on the local host that forwards to a target machine’s port 80.
+
+ssh student@172.16.82.106 -L 1111:localhost:80 -NT
+
+or
+
+ssh -L 1111:localhost:80 student@172.16.82.106 -NT
+
+SSH Local Port Forwarding Through a Local Port
+
+Internet Host:
+ssh student@172.16.1.15 -L 1111:172.16.40.10:22 -NT
+ssh student@localhost -p 1111 -L 2222:172.16.82.106:80 -NT
+firefox localhost:2222
+
+    Creates an additional local port on the local host that forwards to a target machine through the previous channel created.
+
+SSH Dynamic Port Forwarding
+
+    Syntax
+
+ssh -D <port> -p <alt port> <user>@<pivot ip> -NT
+
+    Proxychains default port is 9050
+
+    Creates a dynamic socks4 proxy that interacts alone, or with a previously established remote or local port forward.
+
+    Allows the use of scripts and other userspace programs through the tunnel.
+
+SSH Dynamic Port Forwarding 1-Step
+
+Blue Private Host-1:
+ssh student@172.16.82.106 -D 9050 -NT
+
+proxychains ./scan.sh
+proxychains ssh student@10.10.0.40
+
+Second Pivot External Active Recon
+tp4
+11.1
+SSH Local Port ForwardingSyntaxssh -p <optional alt port> <user>@<pivot ip> -L <local bind port>:<tgt ip>:<tgt port> -NT or ssh -L <local bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<pivot ip> -NT
+
+Dynamic port forwarding
+ssh -D <port> -p <alt port> <user>@<pivot ip> -NT
+
+SSH Remote port forwarding
+ssh -p <optional alt port> <user>@<remote ip> -R <remote bind port>:<tgt ip>:<tgt port> -NT 
+or
+ssh -R <remote bind port>:<tgt ip>:<tgt port> -p <alt port> <user>@<remote ip> -NT
+
+L -> <-R
+
+BOARD STUFF
+IH> <nmap> Bob
+IH> nc Bob 22
+        ProFTPd
+        nc Bob 25
+        OpenSSH
+IH>  wget -r ftp://Bob:22
+IH>  ssh user1@Bob
+Bob> *perform situational awareness*
+IH>  ssh user1@Bob -p 25 -L 51000:127.0.0.1:80 -NT
+Bob> ssh student@IH -R 51099:127.0.0.1:80 -NT 
+IH>  wget -r http://127.0.0.1:51000 or 51099
+IH>  ssh user1@BOB -p 25 -D 9050 -NT
+IH>  proxychains <nmap -Pn> Jerry,Thomas
+IH>  proxychains wget -r gtp://Jerry
+IH>  proxychains telnet Jerry
+Jerry>  ssh user1@Bob -p 25 -R 51098:127.0.0.1:33 -NT
+IH>  ssh user1@Bob -p 25 -L 51001:127.0.0.1:51098
+IH>  nc 127.0.0.1 51001
+        OpenSSH
+IH>  ssh user1@127.0.0.1 -p 51001
+Jerry> exit
+IH>  ssh user1@127.0.0.1 -p 51001 -D 9050 -NT *close the old connection to use the 9050 port*
+IH>  ssh user1@Bob -p 25 -L 51002:Jerry:23 -NT
+IH>  telnet 127.0.0.1 51502
+Jerry> ssh user1@Bob -p 25 -R 51098:127.0.0.1:22 -NT
+IH>  ssh user1@127.0.0.1 -p 51001
+Jerry> exit
+IH>  ssh user1@127.0.0.1 -p 51001 -D 9050 -NT
+IH>  proxychains <nmap> -Pn Joe or proxychains ./scan.sh
+IH>  proxychains nc Joe 22
+        OpenSSH
+IH>  proxychains nc Joe 80
+        Telnet
+IH>  proxychains nc Joe 443
+                ProFTPd
+IH>  proxychains wget -r ftp://Joe:443
+
+
+~/recon
+________
+Bob:22/
+127.0.0.1:51000/
+Jerry/
+Thomas/
+Joe:443/
+
+51000 -> Bob:80
+51099 -> Bob:80
+51001 -> Bob:51098
+51095 -> Jerry:22
+51002 -> Jerry:23
+51098 -> Jerry:22
+9050  -> *
+
+-NT makes it so the terminal no longer accepts input
+
+
+when digging around or Passive Recon Methodology
+Hostname
+interfaces and subnets
+        ip a 
+        ifconfig
+Neighbors
+        ip n
+        arp -a
+Files of interest
+        find / flags 2>/dev/null
+Other listening ports
+        netstat -ntlp
+        ss -ntlp
+Available Tools
+        which tcpdump wireshark nmap telnet get curl ping
+NET RECON
+Host Discovery
+        nmap nc scan script ping sweep
+Port Discovery
+      nmap nc scan script
+Port Validation
+        Banner grabbing using nc
+Follow-on actions based on ports found
+        If 22 or 23 CONNECT and PASSIVE RECON
+        If 21 or 80 wget -r IP or wget -r ftp://ip or firefox
+SCAN METHODOLOGY
+Quick Scan Ports 21-23, 80
+Specific ports based on hints found
+Wel known port range
+        0-1023
+Chunks of 2000 or first 10000
+Hail Mary - Scan all ports (65535)
+
+
+
+Network Analysis 
+______________________________________________________________________________________________________________________
+
+
+Wireshark
+TCPDUMP
+Fingerprinting and host identification is done using POF (Passive OS Fingerprinting)
+You can find it by doing 
+IH> more /etc/p0f/p0f.fp
+We can use Libpcap, WinPcap, and NPCAP
+We do a week for baselining, to understand when people are supposed to be at work and when they aren't, and what is the norm or unusual. 
+Wireshark Expert information could be useful on CTFD
+Ctrl+F for string use The display filter for more help
+
+
+sudo tcpdump -r analysis-demo.pcap "tcp[13]=0x02" | awk '{print $3}' | cut -d. -f1,2,3,4 | sort -n | uniq
+
+
+
+
+
+Full Packet Capture Data is a pcap
+Session Data
+        sflow is for switches
+        NetFlow pulls all the ip information or router
+Statistical Data 
+Packet String Data
+Alert Data
+Log Data
+
+Sensors 
+        In-Line goes through our machine
+        Passive gets data that we aren't in the middle of
+Data Collection
+        TAP
+        SPAN
+        ARP Spoofing (MitM) is a gratuitous reply
+Indicator of Attack (IOA)
+        Proactive
+        A series of actions that are suspicious together
+        Focus on Intent
+        Looks for what must happen
+                Code execution, persistence, lateral movement, etc.
+
+
+
+Network Traffic Filtering 
+______________________________________________________________________________________________________________________
+
+
+
+
+
+
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --sport 22 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp -m multiport --ports 6010,6011,6012 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp -m multiport --ports 6010,6011,6012 -j ACCEPT
+sudo iptables -P INPUT DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -I INPUT -s 172.16.82.106 -j DROP
+sudo iptables -I OUTPUT -d 172.16.82.106 -j DROP
+sudo iptables -A INPUT -s 172.16.82.112 -j ACCEPT
+sudo iptables -A OUTPUT -d 172.16.82.112 -j ACCEPT
+sudo iptables -L -v
+sudo iptables -A INPUT -m state --state INVALID -j DROP
+sudo iptables -A INPUT -f -j DROP
+sudo iptables -A INPUT -i eth0 -p tcp --syn -m limit --limit 10/second -j ACCEPT
+sudo iptables-save > cctcipt.conf
+sudo iptables-restore < cctc.conf -v
+
+
+FROM IH
+sudo apt-get install nftables
+sudo nft list tables
+
+
+
+
+FROM BH1
+sudo nft list tables
+sudo nft add table ip BH1
+sudo nft flush table ip BH1
+sudo nft delete table ip filter
+sudo nft add chain ip BH1 input { type filter hook input priority 0\; policy accept\; }
+sudo nft add chain ip BH1 output { type filter hook output priority 0\; policy accept\; }
+sudo nft list table ip BH1
+sudo nft insert rule ip BH1 input tcp dport 22 accept
+sudo nft insert rule ip BH1 input tcp sport 22 accept
+sudo nft insert rule ip BH1 output tcp dport 22 accept
+sudo nft insert rule ip BH1 output tcp sport 22 accept
+sudo nft add rule ip BH1 input tcp dport { 6010,6011,6012 } ct state { new, established } accept
+sudo nft add rule ip BH1 input tcp sport { 6010,6011,6012 } ct state { new, established } accept
+sudo nft add rule ip BH1 output tcp dport { 6010,6011,6012 } ct state { new, established } accept
+sudo nft add rule ip BH1 output tcp sport { 6010,6011,6012 } ct state { new, established } accept
+sudo nft add chain ip BH1 input { type filter hook input priority 0\; policy drop\; }
+sudo nft add chain ip BH1 output { type filter hook output priority 0\; policy drop\; }
+sudo nft add rule ip BH1 input ip saddr 172.16.82.112 drop
+sudo nft add rule ip BH1 output ip daddr 172.16.82.112 drop
+sudo nft insert rule ip BH1 input ip saddr 10.10.0.40 accept
+sudo nft insert rule ip BH1 output ip daddr 10.10.0.40 accept
+sudo nft list table ip BH1 -a
+sudo nft add rule ip BH1 input position 37 ip saddr 172.16.82.112 drop
+sudo nft add rule ip BH1 output position 38 ip daddr 172.16.82.112 drop
+sudo nft delete rule ip BH1 input handle 35
+sudo nft delete rule ip BH1 output handle 36
+sudo nft add rule ip BH1 input ct state invalid drop
+sudo nft add rule ip BH1 input ip frag-off != 0 drop
+sudo nft add rule ip BH1 input tcp flags syn limit rate 10/second accept
+sudo nft list ruleset > nftable.rules
+sudo nft add chain ip BH1 input { type filter hook input priority 0\; policy accept\; }
+sudo nft add chain ip BH1 output { type filter hook output priority 0\; policy accept\; }
+sudo nft list table ip BH1
+sudo nft flush table ip BH1
+sudo nft -f nftable.rules
+
+
+
+
+NAT and PAT w/ IPTABLES
+
+snat
+	postrouting
+        input
+
+masquerade
+        postrouting
+
+dnat
+	prerouting
+        output
+
+redirect
+        prerouting
+        output
+Source NAT w/ iptables
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to 1.1.1.1
+
+Destination NAT w/ iptables
+iptables -t nat -A PREROUTING -i eth0 -j DNAT --to 10.0.0.1
+
+Source PAT w/ iptables
+iptables -t nat -A POSTROUTING -p tcp -o eth0 -j SNAT --to 1.1.1.1:9001
+
+Destination PAT (Port Forwarding) w/ iptables
+iptables -t nat -A PREROUTING -p tcp -i eth0 -j DNAT --to 10.0.0.1:8080
+
+
+NAT and PAT w/ nftables
+nft add table NAT
+nft add chain NAT PREROUTING {type nat hook prerouting priority 0 \; }
+nft add chain NAT POSTROUTING {type nat hook postrouting priority 100 \; }
+
+Create the NAT rules
+nft add rule NAT POSTROUTING ip saddr 10.1.0.2 oif eth0 snat 144.15.60.11
+nft add rule NAT PREROUTING iif eth0 tcp dport { 80, 443 } dnat 10.1.0.3
+nft add rule NAT POSTROUTING ip saddr 10.1.0.0/24 oif eth0 masquerade
+nft add rule NAT PREROUTING tcp dport 80 redirect to 8080
