@@ -1,0 +1,86 @@
+-> Red Boundry Router: DONOVIAN CYBERSPACE
+
+Target Section:
+
+T1
+Hostname: networking-ctfd-1.server.vta
+Record Type: TXT
+IP: 10.50.23.214
+Ports: 53
+Action: interrogate DNS records
+
+Red Boundry Router
+Hostname: RED-SCR
+IP: 172.16.120.1
+Ports: 22
+Username: vyos
+Password: password
+Action: Use as start point and Perform Passive/Active Reconnaissance
+eth0 (INTERNET) connected to "" via 172.16.120.1/29
+eth1 (REDNET) connected to RED-IPS via 172.16.120.10/29
+eth2 (DMZ) connected to DMZ via 172.16.101.30/27
+
+
+Hostname: red-dmz-host-1
+IP: 172.16.101.2/27
+Ports: 22
+Username: net5_student9
+password: password9
+eth0 connected to RBR via 172.16.101.31/27
+
+Hostname: RED-IPS
+IP: 172.16.120.9/29
+Ports: 22
+Username: vyos
+Password: password
+eth0 connected to RBR via 172.16.120.9/29 desc.(INTERNET)
+eth1 connected to RED-POP via 172.16.120.18/29
+
+Hostname: RED-POP
+IP: 172.16.120.17
+Ports: 22
+Username: vyos
+password: password
+eth0 (INTERNET) connected to RED-IPS via 172.16.120.17/29
+eth1 (REDHOSTS) connected to "" via 172.16.182.126/27
+eth2 (REDINTDMZ) connected to "" via 172.16.140.6/29		
+
+Hostname: RED-POP2
+IP: 172.16.140.5
+username: vyos
+password: password
+eth0 (REDINTDMZ) connected to RED-POP via 172.16.140.5/29
+eth1 (REDINTDMZ2) connected to red-int-dmz2-host-2 via 172.16.140.62/27 
+
+T2
+Hostname: UNKNOWN
+IP: 172.16.182.110
+Action: Perform Active Reconnaissance
+Ports: 22, 80, 1980, 1982, UDP 1984, 1988, TCP/UDP 1989
+
+T3
+Hostname: UNKNOWN
+IP: 172.16.140.33
+Ports: 22, 80, 2800
+Action: Perform Active Reconnaissance
+eog 172.16.140.33/hint-01.png
+
+T4
+Hostname: red-host-1
+IP: 172.16.182.106/27
+Ports: 22
+Action: Perform Active Reconnaissance
+eth0 connected to RED-POP via 172.16.182.127
+
+T5
+Hostname: red-host-3
+IP: 172.16.182.114/27
+Action: Perform Active Reconnaissance
+Ports: 22
+eth0 172.16.182.127
+
+T6
+Hostname: red-host-4
+IP: 172.16.182.118/27
+Action: Perform Active Reconnaissance
+Ports: 22
