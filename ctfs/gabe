@@ -1,6 +1,6 @@
 using sudo nmap -Pn 192.168.0.20,30,40,200 -T4 -p 21-23,80
 
-T3 (Atropia) Float IP address is - 10.50.27.216
+T3 (Atropia) Float IP address is - 10.50.27.164
 creds: netY_studentX:passwordX 
 
 T4 (Pineland) Float IP address is - 10.50.29.131 (Note - You can only telnet here to act as an insider, this will not be a routed path)
@@ -10,11 +10,11 @@ creds netY_studentX:passwordX
 
 
 1.
-ssh net5_student10@10.50.27.164 -L 51000:10.3.0.27:80 -NT
+ssh net5_student16@10.50.27.164 -L 51600:127.0.0.1:22 -NT
  wget -r http://127.0.0.1:51000
 
 2.
-ssh net5_student10@10.50.42.216 -D 9050 -NT
+ssh net5_student16@10.50.27.216 -D 9050 -NT
 proxychains wget -r ftp://10.3.0.1
 
 3.
