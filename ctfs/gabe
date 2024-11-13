@@ -11,14 +11,13 @@ creds netY_studentX:passwordX
 
 1.
 ssh net5_student16@10.50.27.164 -L 51600:127.0.0.1:22 -NT
- wget -r http://127.0.0.1:51000
-
-2.
-ssh net5_student16@10.50.27.216 -D 9050 -NT
+ssh net5_student16@127.0.0.1 -p 51600 -D 9050 -NT
+proxychains wget -r 10.3.0.27
 proxychains wget -r ftp://10.3.0.1
 
+
 3.
-telnet 10.50.44.211
+telnet 10.50.29.131
 
 4.
 IH> telnet 10.50.44.211
