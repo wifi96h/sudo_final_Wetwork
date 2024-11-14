@@ -1,5 +1,5 @@
 using sudo nmap -Pn 192.168.0.20,30,40,200 -T4 -p 21-23,80
-
+my ip  10.50.25.214
 T3 (Atropia) Float IP address is - 10.50.27.164
 creds: netY_studentX:passwordX 
 
