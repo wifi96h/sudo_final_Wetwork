@@ -1,0 +1,273 @@
+10.50.20.84// 10.1.1.30 
+  10.1.1.90 // 10.1.1.125 // 10.1.1.126 closed 
+  
+
+  
+  START FLAG: crowning achievement
+CAPSTONE
+Hostname: UNKNOWN
+IP: 10.50.x.x address provided by instructor
+creds: netY_studentX:passwordX (netY = Networking Class Identifier & studentX = Student Number & passwordX = Student Number)
+Known Ports: UNKNOWN
+Action: Execute proper movement and redirection techniques
+Any system, you reach or login to, you should check the "/usr/share/cctc/" directory. 
+This is where any/all files of interest or instructions will be provided. 
+You should always check this directory for information, just in case.
+  echo "CHEESE" | base64
+
+  nmap 10.50.20.84
+  net5_student16@
+ssh net5_student16@10.50.20.84 -L 51600:127.0.0.1:22 -NT
+  for i in {1..254} ;do (ping -c 1 192.168.0.$i | grep "bytes from" &) ;done 2>/dev/null
+  ssh net5_student16@127.0.0.1 -p 51600 -D 9050 -NT
+ proxychains nmap -vvv -T4 10.1.1.11,25,33,90,125,126 -p 21-23,80 -Pn
+ 
+  10.1.1.90 // 10.1.1.125 // 10.1.1.126 closed
+
+  10.1.1.25
+  ftp 21 open
+ 10.1.1.25/hint-03a.png
+  10.1.1.25/hint-03b.png
+  10.1.1.25/welcome.msg
+  ------------------------------
+  cat 10.1.1.25/welcome.msg
+-- useless
+ ------------------------------------------- 
+eom 10.1.1.25/hint-03a.png 
+There is a webservice running on 
+the port that corresponds with the RFC that governs IPv4 header structure.
+proxychains wget -r http://10.1.1.25:791 (write http/port if not using native http port)
+    then cat the file saved.
+proxychains curl http://10.1.1.25:791
+Welcome to the Packet Crafting and Socket Programming Web server on Capstone-03.
+Go through each of the 5 questions on this website and
+be prepared to write the answer at an alternate location.
+
+cat 10.1.1.25:791/index.html
+
+10.1.1.25:791/index-1.html
+Sockets are created in ________ space.
+Specify the one word BASE64 conversion of your answer in ALL CAPS.
+
+10.1.1.25:791/index-2.html
+Which module would you need to import to convert data into a corresponding 2-digit hex representation
+Specify the module in lowercase and converted to BASE64
+
+10.1.1.25:791/index-3.html
+What is the proper format to pro-grammatically pack the IPv4 RAW header?
+specify the answer in the proper case. 
+Include only what is between the single or double quotes and 
+not the quotes themselves or the "!".
+header = struct.pack('!BBHHHBBH4s4s'
+
+10.1.1.25:791/index-4.html
+What is the default (and most common) encoding used when converting data to be sent over the network.
+Provide your answer in ALL CAPS and converted to BASE64
+
+10.1.1.25:791/index-5.html
+What type of header does TCP build to perform the checksum function?
+Provide your answer in ALL CAPS and converted to BASE64.
+echo "PSEUDO" | base64
+
+---------------------------------------------------------------------------------
+  eom 10.1.1.25/hint-03b.png
+  there is another hint in the student home drive there is no ssh access to this system 
+so try using ftp with your student credentials.
+proxychains ftp 10.1.1.25
+Name (10.1.1.25:student): net5_student16
+  passive 
+ls 
+  get hint-03c.png
+ 
+there is a listening tcp port on this system that is waiting for your connection build 
+a python3 tcp stream sender and send it thru your tunnel to say Hi
+  send your message as a bytes like object 
+and decode the response to/from UTF-8 to get the double encoded message 
+  you can use cyber chef to help you decode the message to human readable 
+
+proxychains nmap -vvv -T4 10.1.1.25 -p- -Pn
+
+PORT     STATE SERVICE    REASON
+21/tcp   open  ftp        syn-ack
+791/tcp  open  unknown    syn-ack
+4869/tcp open  phrelaydbg syn-ack
+
+#!/usr/bin/python3
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+ipaddr = '10.1.1.25'
+port = 4869
+s.connect((ipaddr, port))
+message = b"Hi"
+s.send(message)
+data, conn = s.recvfrom(1024)
+print(data.decode('utf-8'))
+s.close()
+
+proxychains python3 streamsocket1.py
+  NDIgNjEgN2EgNjkgNmUgNjcgNjE=
+cyberchef 
+base64
+
+------------------------------------------------------------------------------------
+
+
+10.1.1.11
+  PORT   STATE  SERVICE REASON
+PORT     STATE SERVICE REASON
+21/tcp   open  ftp     syn-ack
+proxychains wget -r ftp://10.1.1.11
+
+10.1.1.11/hint-02a.png
+there is a webservice running on the port that corresponds with the rfc that governs ipv4 addressing 
+proxychains wget -r http://10.1.1.11:1918
+
+
+proxychains curl http://10.1.1.11:1918
+Welcome to the Network Fundamentals Web server on Capstone-02
+Go through each of the 5 questions on this website and
+be prepared to write the answer at an alternate location.
+
+10.1.1.11:1918/index-1.html
+APIPA uses the IP network range of 169.254.0.0/16. What RFC number governs this? 
+Enter only the BASE64 conversion of the number
+echo "3927" | base64
+
+10.1.1.11:1918/index-2.html
+IPv6 Uses SLAAC to resolve its Global address from the Router. 
+What multicast destination address does it use to Solicit the router?
+Enter the address in uppercase and convert to BASE64
+echo "FF02::2" | base64
+
+10.1.1.11:1918/index-3.html
+Which type of ARP is sent in order to perform a MitM attack?
+Specify the answer in ALL CAPS and convert to BASE64
+echo "GRATUITOUS" | base64
+
+10.1.1.11:1918/index-4.html
+An attacker built a FRAME that looks like this
+Destination MAC | Source MAC | 0x8100 | 1 | 0x8100 | 100 | 0x0800 |
+What form of attack is being performed? Supply your 2 word answer in ALL CAPS and convert to BASE64
+echo "VLAN HOPPING" | base64
+
+10.1.1.11:1918/index-5.html
+A router receives a 5000 byte packet on eth0.
+The MTU for the outbound interface (eth1) is 1500.
+fragmentation offset increment be with the conditions below?
+Packet IHL = 7</p>
+
+Offset = (MTU - (IHL x 4)) ÷ 8
+            defualt mtu is 1500 bytes 
+            ** defualt IHL is the length of words that are in the internet header **
+            2^3=8 how much space in the feild 
+
+10.1.1.11/hint-02b.png
+thre is a pcap saved in the share folder of this machine that you should look at 
+23/tcp   open  telnet  syn-ack
+student@blue-internet-host-student-16:~$ ssh net5_student16@127.0.0.1 -p 51600 -L 51601:10.1.1.11:23 -NT
+telnet 127.0.0.1 51601
+
+net5_student16@capstone-02:~$ 
+ip a 
+inet 10.1.1.11
+ip n | grep -v FAILED
+10.1.1.125 dev eth0 lladdr fa:16:3e:10:75:00 STALE
+10.1.1.25 dev eth0 lladdr fa:16:3e:d3:7f:2b STALE
+10.1.1.90 dev eth0 lladdr fa:16:3e:49:a3:7e STALE
+10.1.1.126 dev eth0 lladdr fa:16:3e:05:49:ee REACHABLE
+10.1.1.33 dev eth0 lladdr fa:16:3e:df:26:49 STALE
+10.1.1.30 dev eth0 lladdr fa:16:3e:05:02:44 REACHABLE
+ls /usr/share/cctc/
+cd /usr/share/cctc/
+cat Flag-02f.txt
+Question 1:
+
+Using BPF’s, determine how many packets with a DSCP of 26 being sent to the host 10.0.0.103.
+tcpdump -n -r capstone-bpf.pcap "ip[1] >> 2 = 26 && ip[16:4] =0x0a000067" | wc -l
+Provide the number of packets converted to BASE64.
+
+-------------------------------------------------------------------------------
+
+Question 2:
+
+What is the total number of fragmented packets?
+tcpdump -n -r capstone-bpf.pcap 'ip[6] & 0x20 = 0x20 || ip[6:2] & 0x1fff > 0' | wc -l
+
+Provide the number of packets converted to BASE64.
+
+-------------------------------------------------------------------------------
+
+Question 3:
+
+How many packets have the DF flag set and has ONLY the RST and FIN TCP Flags set?
+tcpdump -n -r capstone-bpf.pcap "ip[6] & 0x40 = 0x40 && tcp[13] & 0xff = 0x05" | wc -l
+Provide the number of packets converted to BASE64.
+
+-------------------------------------------------------------------------------
+
+Question 4:
+
+An attacker is targeting the host 10.0.0.104 with either a TCP full or half open scan. Based off the pcap, how many ports are open?
+
+Provide the number of ports converted to BASE64.
+---------------------------------------------------------------------------------------
+
+10.1.1.33
+proxychains nmap -vvv -T4 10.1.1.33 -p- -Pn
+
+proxychains wget -r ftp://10.1.1.33
+10.1.1.33/hint-04a.png
+there is another box capstone-05 on a diffrent network 
+that only this system can see trying to attack this box on the port asc. w/ 
+w32/blaster worm use a sniffing tool to try to find the message it is trying to send 
+
+3:46:41.018645 IP (tos 0xc0, ttl 64, id 16327, offset 0, flags [none], proto ICMP (1), length 87)
+    1.1.1.1 > 1.1.1.2: ICMP 1.1.1.1 udp port tftp unreachable, length 67
+	IP (tos 0x0, ttl 64, id 25248, offset 0, flags [DF], proto UDP (17), length 59)
+    1.1.1.2.51139 > 1.1.1.1.tftp: [bad udp cksum 0x043d -> 0x1bb3!]  31 tftp-#18720
+
+	I.just.want.to.say.LOVE.YOU.SAN
+echo "I just want to say LOVE YOU SAN" | base64
+
+proxychains wget -r 10.1.1.33
+10.1.1.33/hint-04b.png
+ripv2 on 10.1.1.0/25 sniff out the traffic to find what networks its advertising in its updates
+this will give the ip address of next environment pivo to access from internet host 
+224.0.0.9 10.50.21.126
+
+10.50.21.126/32
+
+21/tcp open   ftp     syn-ack
+22/tcp closed ssh     conn-refused
+23/tcp open   telnet  syn-ack
+80/tcp open   http    syn-ack
+ssh net5_student16@10.50.20.84 -L 51600:127.0.0.1:22 -NT
+ssh net5_student16@127.0.0.1 -p 51600 -L 51601:10.1.1.33:23 -NT
+telnet 127.0.0.1 51601
+
+  eth0 10.1.1.33
+eth1 1.1.1.1
+ip r
+default via 10.1.1.126 dev eth0 
+default via 1.1.1.6 dev eth1 
+1.1.1.0/29 dev eth1 proto kernel scope link src 1.1.1.1 
+10.1.1.0/25 dev eth0 proto kernel scope link src 10.1.1.33 
+10.1.1.126 dev eth0 lladdr fa:16:3e:05:49:ee REACHABLE
+10.1.1.90 dev eth0 lladdr fa:16:3e:49:a3:7e STALE
+10.1.1.11 dev eth0 lladdr fa:16:3e:59:c6:d4 STALE
+10.1.1.125 dev eth0 lladdr fa:16:3e:10:75:00 STALE
+1.1.1.4 dev eth1 lladdr fa:16:3e:4c:3d:7e STALE
+10.1.1.30 dev eth0 lladdr fa:16:3e:05:02:44 REACHABLE
+10.1.1.25 dev eth0 lladdr fa:16:3e:d3:7f:2b STALE
+1.1.1.6 dev eth1 lladdr fa:16:3e:a5:95:48 STALE
+1.1.1.2 dev eth1 lladdr fa:16:3e:30:1e:6b REACHABLE
+
+nameserver 10.50.255.254 10.50.21.126/32
+tcpdump -i eth1 -vv -X 
+
+https://net.cybbh.io/public/networking/latest/07_discovery/fg.html#_7_3_describe_methods_used_for_passive_internal_network_reconnaissance
+nameserver 10.50.255.254 10.50.21.126/32
+ps -elf
+find / -name hint* 2> /dev/null
+tftp
+  
