@@ -1,0 +1,83 @@
+go back to blue internet host you are basically starting over 
+sudo iptables -t mangle -A POSTROUTING -o eth0 -j TTL --ttl-set 255
+
+ssh on a radom high port change ttl with iptables flag is port 
+ssh net5_student16@10.50.21.126 -p 7777 -L 51600:127.0.0.1:7777 -NT
+ip a inet 10.2.2.6
+ip r 10.2.2.14 
+ip n | grep -v FAILED
+10.2.2.7 dev eth0 lladdr fa:16:3e:d6:31:83 REACHABLE
+10.2.2.14 dev eth0 lladdr fa:16:3e:25:1b:63 REACHABLE
+10.2.2.4 dev eth0 lladdr fa:16:3e:57:1a:88 STALE
+tcpdump -i eth0 -XX port 23 3549
+10.2.2.7 745
+
+ps -elf | grep -v root
+tcpdump -A -X -vv
+net5_student11@10.2.2.6 -p 7777 -R 51199:127.0.0.1:7777
+tcpdump -i eth0 -nXX port 23
+
+10.2.2.4
+proxychains nmap -vvv -T4 10.2.2.4 -p- -Pn
+
+10.2.2.7
+PORT   STATE SERVICE REASON
+23/tcp open  telnet  syn-ack
+80/tcp open  http    syn-ack
+
+10.2.2.7/hint-07a.png
+ssh is running on a higher port not accesible from the outside it also seems to use a 
+dif usename passwd intercept cred maybe another system has a toll
+the flag for this syst is the pass converted 
+
+tcpdump -i eth0 -nXX port 23
+net5_comrade16
+H0ld 73h d00r?
+
+ssh net5_student16@127.0.0.1 -p 51600 -L 51601:10.2.2.7:23 -NT
+telnet 127.0.0.1 51601
+
+ip a
+eth0 10.2.2.7
+eth1 10.10.10.129
+ip r
+10.10.10.254
+10.10.10.128/25
+
+ip n | grep -v failed
+10.10.10.167 dev eth1 lladdr fa:16:3e:8b:1d:73 STALE
+80/tcp  open  http    syn-ack
+404/tcp open  nced    syn-ack
+eth010.10.10.167
+eth1192.168.10.70
+ip r 192.168.10.94
+192.168.10.80
+192.168.10.74
+
+
+10.10.10.181 dev eth1 lladdr fa:16:3e:0e:a5:bd STALE
+
+
+10.10.10.182 dev eth1 lladdr fa:16:3e:b8:6d:ee REACHABLE
+21/tcp  open  ftp     syn-ack
+504/tcp open  citadel syn-ack
+
+10.10.10.140 dev eth1 lladdr fa:16:3e:41:2c:ac STALE
+10.10.10.140
+/usr/sbin/ntpd -p /var/run/ntpd.pid -g -u 106:112
+PORT    STATE SERVICE REASON
+21/tcp  open  ftp     syn-ack
+301/tcp open  unknown syn-ack
+eth0 10.10.10.140
+eth1 192.168.10.44
+ip r 192.168.10.62
+ip n | grep -v FAILED
+
+192.168.10.39
+PORT     STATE SERVICE         REASON
+21/tcp   open  ftp             syn-ack
+3790/tcp open  quickbooksrds   syn-ack http
+4444/tcp open  krb524          syn-ack
+5687/tcp open  gog-multiplayer syn-ack
+
+
