@@ -1,0 +1,230 @@
+### TUNNELS BOI ###
+^^^^^^^^^^^^^^^^^^^
+scp options source dest
+be methodical step by step the same steps 
+
+
+$\color{red}{dont\ build\ tunnels\ off\ proxychains\}$
+
+! sidenotes !
+____________________________________
+** NETWORK 5XXYY
+           588  
+
+dns  - look for continous dns requests not to exceed 512 bytes 
+
+http - look for http steadily sending data 
+
+ssh  - asymetric and symetric 
+
+ssh-keygen -f 
+
+/etc/hosts can be edited always use the loop back
+____________________________________
+
+
+! SSH OPTIONS !
+____________________________________
+
+-L - Creates a port on the client mapped to a ip:port via the server ** only used on our internet host **
+--------------------------------    
+  *map every connection you make*
+  ** need to enumerate which machines and shells each command is being run from **
+  *** local port start at low end go up by 1 // remote port start at high end dec by 1 ***
+  **** port forwards always go to loopback ****
+  ***** you are building these tunnels to access the tools on your IH *****
+  
+start 
+----
+nmap BH1 -t4 -sv -vvvv -p- -Pn 
+
+nc ip port  (see what service the port is actually offering)
+build [tunnel 1] 
+
+wget -r ip (because its a web server and i want its files) https://ip:port (if its not port 80
+wget -r ftp://ip
+eom cat
+
+ssh or telnet to new machine 
+
+[do host enumeration] (ip a / ip n / ip r / ss -ntlp /ps -elf 
+ip n | grep -v FAILED 
+
+do a ping sweep of the network to that machine :: you found an interface with a network connection 
+for i in {1..254} ; do (ping -c 1 192.168.1.$i | grep "bytes from" &) ;done
+
+find / -name hint* 2> /dev/null find / -iname flag* 2> /dev/null
+
+time to make first tunnel (if we didnt need to do a -R)
+IH :: ssh user@ip -L 51800:BH1(loopback):22(or whatever port) -NT 
+
+nc 127.0.0.1 51800 (excuted from the ssh session) // press enter type / random / press enter 
+looking for open ssh 
+
+[proxychains] IH :: ssh user@127.0.0.1 -p 51800 -D 9050 -NT
+
+IH :: proxychains nmap -t4 -vvvv -p- new ip -Pn 
+
+IH :: proxychains nc newip ports
+
+IH :: proxychains wget -r ftp://new ip (it will work if annoumous is allowed, if not you need credentials) if you have credentials then --
+-- IH :: -- proxyxhains newip
+from the ftp passive 
+ls
+get
+                                   
+[tunnel 2] IH :: ssh user@127.0.0.1 -p 51800 -L 58801:newest ip:22 -NT (if you only have ports that dont allow encry its okay) 
+ test -- IH :: nc 127.0.0.1 52201 (if you get errors raise your hand) 
+
+IH :: ssh user@127.0.0.1 -p 52201 
+[do host enumerate -see above] look in locations refrenced 
+
+*-R example *
+[tunnel 4] newestbox :: ssh user@box2(as box 3 knows it /intIP) -R 58899:(loopback):80 -NT                                  
+                                              
+[tunnel 5] IH :: user@box2( as IH knows it /ext) -L 58802:127.0.0.1:58899 -NT
+IH :: nc 127.0.0.1 52202 (or dev/tcp)
+
+[proxy] [close old if left open] 
+
+ IH :: ssh user@127.0.0.1 -p 58802 -D 9050 -NT 
+
+IH :: proxychains nc 127.0.0.1 21 (if we need to do stuff to box 3 like the extra credit)
+
+IH :: proxychains wget -r ftp://127.0.0.1 (it will work if annoumous is allowed, if not you need credentials) if you have credentials then --
+-- IH :: -- proxyxhains ftp 127.0.0.1
+
+------------------------------------------------------------
+
+more example
+
+James-host   = (filler for first box ip address ) 
+damient-host = (filler for secound box ip address )
+
+IH :: nmap -t4 -vvvv -p- James-host(filler for first box ip address ) 
+nc james-host 22
+           type random garbage hit enter 
+IH :: ssh user@james-host
+           james-host :: perform host enumeration 
+(youve learned james has external and internal ip)
+           and found another host > Damianhost
+time to create a local port forward / or a dynamic to start getting info 
+this example is using dynamic 
+
+time to enumerate the http server on the first box
+IH :: ssh user@james-host( his external ip) -D 9050 -NT {map this so you dont forget > take notes on the side}
+           IH :: proxychains wget -r james-host( loopback ) {this targets the above they are linked functions}
+
+###time to scan the next box###
+IH :: proxychains nmap -Pn -T4 -vvvv -p21-23,80 damient-host (this returned 23 and 80)
+           time to banner grab those ports to verify they are what they are supposed to be 
+IH :: proxychains nc damient-host 23 then 80 
+           type smething hit enter #side note weird questions marks are telnet#
+IH :: proxychains wget -r damient-host
+
+###time to get on damian###
+IH :: proxychains telnet damient-host
+           time to host inumerate ### be prepared to find new ports open ie port 22 ###
+damien :: ssh user@james-host( internal ip ) -R 58899:127.0.0.1:22 -NT 
+
+#new terminiator pain#
+IH :: ssh user@james-host(ext) -L 58800:127.0.0.1:58899 -NT
+           map it 
+#time to banner grab#
+IH :: nc 127.0.0.1 58800
+           i see open ssh? yay!
+#now we ssh #
+IH :: ssh user@127.0.0.1 -p 58800
+
+## im damnien now ##
+time to close the dynamic port forward !!! OOOPPPS !!! we broke everything !!!
+
+IH :: 127.0.0.1 58800 #connection refused# due to us killing our tunnels 
+
+## time to start over ##
+
+IH :: ssh user@james(ext) -L 58801:damian(ext):23 -NT
+           time to test it 
+IH :: nc 127.0.0.1 58801
+           looking for a patern 
+IH :: telnet 127.0.0.1 58801
+           now im damien (again) 
+Damien :: ssh user@james(int) -R 58899:127.0.0.1:22 -NT
+           map it test it
+IH :: nc 127.0.0.1 58800
+            i see open ssh? yay! if i dont call for help 
+IH :: ssh user@127.0.0.1 -p 58800
+
+
+## time to scan ian and lance ##
+           from damian 
+IH :: user@127.0.0.1 -p 58800 -D 9050 -NT
+IH :: proxychains nmap -pn -t4 -vvvv -p21-23,80 ian-host,lance host 
+IH :: proxychains nc ian (port)
+IH :: proxychains nc lance (port)
+                      type stuff hit enter 
+                      wget 
+
+## make a local port forward ##
+
+IH :: ssh user@127.0.0.1 -p58800 -L 58802:ian-host:23 -NT
+           test it 
+IH :: nc 127.0.0.1 58802
+
+                                     
+                                     
+              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ssh -p <optional alt port> <user>@<pivot ip> -L <local bind port>:<target ip>:<target port>
+or
+ssh -L <local port>:<target ip>:<target port> -p <alt port> <user>@<pivot ip> -NT
+
+SSH Remote Port Forwarding
+---------------------
+ssh -p <optional alt port> <user>@<remote ip> -R <remote bind port>:<target ip>:<target port> -NT
+or
+ssh -R <remote bind port>:<target ip>:<target port> -p <optional alt port> <user>@<remote ip> -NT
+
+nmap <IP>
+nc <IP> <port> - shows what service is running on the port
+
+wget -r ftp://<IP>:22(alternate port)
+Creates a folder called <IP>:22 on the local host
+
+ssh <found username>@<IP> -p 25 -L 50200:127.0.0.1:80(open port on the example machine) -NT (terminal does not accept more input)
+ssh <user>@InternetHost -R 50299:127.0.0.1:80(open port on the example machine) -NT
+wget -r 127.0.0.1:50200 or 50299 (makes the directory 127.0.0.1:50200 on local machine)
+#####################################################
+###                                               ###
+###                  TUNNELING                    ###
+###                                               ###
+#####################################################
+ssh <user>@<IP> -p 25 -D 9050 -NT
+proxychains <nmap> -Pn Jerry, Thomas (hostnames)
+Jerry - 21, 22, 23, 80 (open ports)
+Thomas - 23, 80 (open ports)
+Joe - 22, 80, 443
+proxychains wget -r ftp://Jerry (sends through the tunnel created with 9050)
+Creates Jerry directory on local machine
+proxychains wget -r Jerry
+Sends information to Jerry directory
+proxychains wget -r Thomas
+Creates Thomas directory on local machine
+proxychains telnet Jerry (gives access to Jerry)
+
+ssh <user>@<IP>(first box accessed) -p 25 -R 50298:127.0.0.1:22 -NT
+ssh <user>@<IP>(Bob) -p 25 -L 50201:127.0.0.1:50298 -NT
+nc 127.0.0.1 50201 (to check tunnels)
+ssh <user>@127.0.0.1 -pp 50201 (gives access to Jerry) -D 9050 (close old connection) -NT
+ssh <user>@Bob -p 25 -L 50202:Jerry:23 -NT
+telnet 127.0.0.1 50202
+ssh <user>@Bob -p 25 -R 50298:127.0.0.1:22 -NT
+ssh <user>@127.0.0.1 -p 50201 (gives access to Jerry) -D 9050 -NT
+proxychains <nmap -Pn Joe or ./scan.sh>
+proxychains nc Joe (22)(80)(443) (22 - SSH, 80 - Telnet, 443 - FTP)
+proxychains wget -r ftp://Joe:443 (Creates Joe:443 directory on local machine)
+#####################################################
+###                                               ###
+###                END OF TUNNELING               ###
+###                                               ###
+#####################################################
